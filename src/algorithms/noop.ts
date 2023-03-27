@@ -16,12 +16,15 @@
 
 import {
   AbstractAlgorithm,
+  AbstractViewportAlgorithm,
   AlgorithmInput,
   AlgorithmOptions,
   AlgorithmOutput,
+  ViewportAlgorithmOptions,
 } from "./core";
 
 import { Cluster } from "../cluster";
+import { filterMarkersToPaddedViewport } from "./utils";
 
 /**
  * Noop algorithm does not generate any clusters or filter markers by the an extended viewport.
@@ -37,6 +40,38 @@ export class NoopAlgorithm extends AbstractAlgorithm {
   }: AlgorithmInput): AlgorithmOutput {
     return {
       clusters: this.cluster({ markers, map, mapCanvasProjection }),
+      changed: false,
+    };
+  }
+
+  protected cluster(input: AlgorithmInput): Cluster[] {
+    return this.noop(input);
+  }
+}
+
+/**
+ * NoopViewport algorithm does not generate any clusters but it does filter markers by the an extended viewport.
+ */
+export class NoopViewportAlgorithm extends AbstractViewportAlgorithm {
+  constructor({ ...options }: ViewportAlgorithmOptions) {
+    super(options);
+  }
+  public calculate({
+    markers,
+    map,
+    mapCanvasProjection,
+  }: AlgorithmInput): AlgorithmOutput {
+    return {
+      clusters: this.cluster({
+        markers: filterMarkersToPaddedViewport(
+          map,
+          mapCanvasProjection,
+          markers,
+          this.viewportPadding
+        ),
+        map,
+        mapCanvasProjection,
+      }),
       changed: false,
     };
   }

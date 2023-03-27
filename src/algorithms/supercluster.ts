@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { AbstractAlgorithm, AlgorithmInput, AlgorithmOutput } from "./core";
+import {
+  AbstractViewportAlgorithm,
+  AlgorithmInput,
+  AlgorithmOutput,
+} from "./core";
 import SuperCluster, { ClusterFeature } from "supercluster";
 
 import { Cluster } from "../cluster";
+import { getPaddedViewport } from "./utils";
 import equal from "fast-deep-equal";
 
 export type SuperClusterOptions = SuperCluster.Options<
@@ -25,21 +30,26 @@ export type SuperClusterOptions = SuperCluster.Options<
   { [name: string]: any },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   { [name: string]: any }
->;
+> & { viewportPadding?: number };
 
 /**
  * A very fast JavaScript algorithm for geospatial point clustering using KD trees.
  *
  * @see https://www.npmjs.com/package/supercluster for more information on options.
  */
-export class SuperClusterAlgorithm extends AbstractAlgorithm {
+export class SuperClusterAlgorithm extends AbstractViewportAlgorithm {
   protected superCluster: SuperCluster;
   protected markers: google.maps.Marker[];
   protected clusters: Cluster[];
   protected state: { zoom: number };
 
-  constructor({ maxZoom, radius = 60, ...options }: SuperClusterOptions) {
-    super({ maxZoom });
+  constructor({
+    maxZoom,
+    radius = 60,
+    viewportPadding = 60,
+    ...options
+  }: SuperClusterOptions) {
+    super({ maxZoom, viewportPadding });
 
     this.superCluster = new SuperCluster({
       maxZoom: this.maxZoom,
@@ -93,9 +103,16 @@ export class SuperClusterAlgorithm extends AbstractAlgorithm {
     return { clusters: this.clusters, changed };
   }
 
-  public cluster({ map }: AlgorithmInput): Cluster[] {
+  public cluster({ map, mapCanvasProjection }: AlgorithmInput): Cluster[] {
     return this.superCluster
-      .getClusters([-180, -90, 180, 90], Math.round(map.getZoom()))
+      .getClusters(
+        getPaddedViewport(
+          map.getBounds(),
+          mapCanvasProjection,
+          this.viewportPadding
+        ),
+        Math.round(map.getZoom())
+      )
       .map(this.transformCluster.bind(this));
   }
 

@@ -16,6 +16,7 @@
 
 import { Cluster } from "../cluster";
 import { filterMarkersToPaddedViewport } from "./utils";
+import equal from "fast-deep-equal";
 
 export interface AlgorithmInput {
   /**
@@ -96,9 +97,6 @@ export abstract class AbstractAlgorithm implements Algorithm {
   protected abstract cluster({ markers, map }: AlgorithmInput): Cluster[];
 }
 
-/**
- * @hidden
- */
 export interface ViewportAlgorithmOptions extends AlgorithmOptions {
   /**
    * The number of pixels to extend beyond the viewport bounds when filtering
@@ -115,24 +113,39 @@ export interface ViewportAlgorithmOptions extends AlgorithmOptions {
  */
 export abstract class AbstractViewportAlgorithm extends AbstractAlgorithm {
   protected viewportPadding = 60;
+  protected state: { zoom: number };
 
   constructor({ viewportPadding = 60, ...options }: ViewportAlgorithmOptions) {
     super(options);
     this.viewportPadding = viewportPadding;
+    this.state = { zoom: null };
   }
   public calculate({
     markers,
     map,
     mapCanvasProjection,
   }: AlgorithmInput): AlgorithmOutput {
+    const state = { zoom: map.getZoom() };
+    let changed = false;
+    if (this.state.zoom > this.maxZoom && state.zoom > this.maxZoom) {
+      // still beyond maxZoom, no change
+    } else {
+      changed = !equal(this.state, state);
+    }
+    this.state = state;
     if (map.getZoom() >= this.maxZoom) {
       return {
         clusters: this.noop({
-          markers,
+          markers: filterMarkersToPaddedViewport(
+            map,
+            mapCanvasProjection,
+            markers,
+            this.viewportPadding
+          ),
           map,
           mapCanvasProjection,
         }),
-        changed: false,
+        changed: changed,
       };
     }
 

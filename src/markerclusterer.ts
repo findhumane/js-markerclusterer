@@ -71,7 +71,7 @@ export class MarkerClusterer extends OverlayViewSafe {
   protected renderer: Renderer;
   /** @see {@link MarkerClustererOptions.map} */
   protected map: google.maps.Map | null;
-  /** @see {@link MarkerClustererOptions.maxZoom} */
+  /** @see {@link AlgorithmOptions.maxZoom} */
   protected idleListener: google.maps.MapsEventListener;
 
   constructor({
