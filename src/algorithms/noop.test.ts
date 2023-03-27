@@ -28,6 +28,7 @@ beforeEach(() => {
 test("noop should not filter and return changed: false", () => {
   const mapCanvasProjection = new MapCanvasProjection();
   const markers: google.maps.Marker[] = [new google.maps.Marker()];
+  const forceRecalculate: boolean = false;
 
   const noop = new NoopAlgorithm({ maxZoom: 16 });
   noop["noop"] = jest.fn();
@@ -39,6 +40,7 @@ test("noop should not filter and return changed: false", () => {
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   });
 
   expect(getBounds).toHaveBeenCalledTimes(0);
@@ -48,6 +50,7 @@ test("noop should not filter and return changed: false", () => {
 test("noop should not filter and return changed: false", () => {
   const mapCanvasProjection = new MapCanvasProjection();
   const markers: google.maps.Marker[] = [new google.maps.Marker()];
+  const forceRecalculate: boolean = false;
 
   const noop = new NoopViewportAlgorithm({ maxZoom: 16 });
   noop["noop"] = jest.fn();
@@ -59,6 +62,7 @@ test("noop should not filter and return changed: false", () => {
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   });
 
   expect(getBounds).toHaveBeenCalledTimes(1);

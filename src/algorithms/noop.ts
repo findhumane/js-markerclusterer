@@ -37,9 +37,10 @@ export class NoopAlgorithm extends AbstractAlgorithm {
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   }: AlgorithmInput): AlgorithmOutput {
     return {
-      clusters: this.cluster({ markers, map, mapCanvasProjection }),
+      clusters: this.cluster({ markers, map, mapCanvasProjection, forceRecalculate }),
       changed: false,
     };
   }
@@ -60,6 +61,7 @@ export class NoopViewportAlgorithm extends AbstractViewportAlgorithm {
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   }: AlgorithmInput): AlgorithmOutput {
     return {
       clusters: this.cluster({
@@ -71,6 +73,7 @@ export class NoopViewportAlgorithm extends AbstractViewportAlgorithm {
         ),
         map,
         mapCanvasProjection,
+        forceRecalculate,
       }),
       changed: false,
     };

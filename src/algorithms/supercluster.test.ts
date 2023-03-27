@@ -28,13 +28,14 @@ beforeEach(() => {
 test("should only call load if markers change", () => {
   const mapCanvasProjection = new MapCanvasProjection();
   const markers: google.maps.Marker[] = [new google.maps.Marker()];
+  const forceRecalculate: boolean = false;
 
   const superCluster = new SuperClusterAlgorithm({});
   superCluster["superCluster"].load = jest.fn();
   superCluster.cluster = jest.fn();
 
-  superCluster.calculate({ markers, map, mapCanvasProjection });
-  superCluster.calculate({ markers, map, mapCanvasProjection });
+  superCluster.calculate({ markers, map, mapCanvasProjection, forceRecalculate });
+  superCluster.calculate({ markers, map, mapCanvasProjection, forceRecalculate });
   expect(superCluster["superCluster"].load).toHaveBeenCalledTimes(1);
   expect(superCluster["superCluster"].load).toHaveBeenCalledWith([
     {
@@ -51,6 +52,7 @@ test("should cluster markers", () => {
     new google.maps.Marker(),
     new google.maps.Marker(),
   ];
+  const forceRecalculate: boolean = false;
 
   const superCluster = new SuperClusterAlgorithm({});
   map.getZoom = jest.fn().mockReturnValue(0);
@@ -72,6 +74,7 @@ test("should cluster markers", () => {
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   });
 
   expect(clusters).toHaveLength(1);
@@ -102,6 +105,7 @@ test("should not cluster if zoom didn't change", () => {
     new google.maps.Marker(),
     new google.maps.Marker(),
   ];
+  const forceRecalculate: boolean = false;
 
   const superCluster = new SuperClusterAlgorithm({});
   superCluster["markers"] = markers;
@@ -115,6 +119,7 @@ test("should not cluster if zoom didn't change", () => {
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   });
 
   expect(changed).toBeFalsy();
@@ -127,6 +132,7 @@ test("should not cluster if zoom beyond maxZoom", () => {
     new google.maps.Marker(),
     new google.maps.Marker(),
   ];
+  const forceRecalculate: boolean = false;
 
   const superCluster = new SuperClusterAlgorithm({});
   superCluster["markers"] = markers;
@@ -140,6 +146,7 @@ test("should not cluster if zoom beyond maxZoom", () => {
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   });
 
   expect(changed).toBeFalsy();
@@ -148,6 +155,7 @@ test("should not cluster if zoom beyond maxZoom", () => {
 
 test("should round fractional zoom", () => {
   const mapCanvasProjection = new MapCanvasProjection();
+  const forceRecalculate: boolean = false;
   mapCanvasProjection.fromLatLngToDivPixel = jest
     .fn()
     .mockImplementation((b: google.maps.LatLng) => ({
@@ -171,7 +179,7 @@ test("should round fractional zoom", () => {
   superCluster["superCluster"].getClusters = jest.fn().mockReturnValue([]);
 
   map.getZoom = jest.fn().mockReturnValue(1.534);
-  superCluster.cluster({ map, mapCanvasProjection, markers });
+  superCluster.cluster({ map, mapCanvasProjection, markers, forceRecalculate });
   expect(mapCanvasProjection.fromDivPixelToLatLng).toHaveBeenCalledTimes(2);
   expect(mapCanvasProjection.fromDivPixelToLatLng).toHaveBeenNthCalledWith(1, {
     x: -240,
@@ -187,7 +195,7 @@ test("should round fractional zoom", () => {
   );
 
   map.getZoom = jest.fn().mockReturnValue(3.234);
-  superCluster.cluster({ map, mapCanvasProjection, markers });
+  superCluster.cluster({ map, mapCanvasProjection, markers, forceRecalculate });
   expect(superCluster["superCluster"].getClusters).toHaveBeenCalledWith(
     [0, 0, 0, 0],
     3

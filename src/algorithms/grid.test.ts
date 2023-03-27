@@ -32,6 +32,7 @@ test("calculate should return changed: true for first call when zoom > max zoom"
   const grid = new GridAlgorithm({ maxZoom: 16 });
   grid["noop"] = jest.fn();
   grid["cluster"] = jest.fn();
+  const forceRecalculate: boolean = false;
 
   map.getZoom = jest.fn().mockReturnValue(15);
 
@@ -39,6 +40,7 @@ test("calculate should return changed: true for first call when zoom > max zoom"
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   });
 
   map.getZoom = jest.fn().mockReturnValue(17);
@@ -47,6 +49,7 @@ test("calculate should return changed: true for first call when zoom > max zoom"
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   });
 
   expect(changed).toBe(true);
@@ -55,6 +58,7 @@ test("calculate should return changed: true for first call when zoom > max zoom"
 test("calculate should return changed: false for next calls above max zoom", () => {
   const mapCanvasProjection = new MapCanvasProjection();
   const markers: google.maps.Marker[] = [new google.maps.Marker()];
+  const forceRecalculate: boolean = false;
 
   const grid = new GridAlgorithm({ maxZoom: 16 });
   grid["noop"] = jest.fn();
@@ -65,6 +69,7 @@ test("calculate should return changed: false for next calls above max zoom", () 
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   });
 
   expect(result.changed).toBe(true);
@@ -73,6 +78,7 @@ test("calculate should return changed: false for next calls above max zoom", () 
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   });
 
   expect(result.changed).toBe(false);
@@ -81,6 +87,7 @@ test("calculate should return changed: false for next calls above max zoom", () 
 test("calculate should return changed: false for next calls above max zoom, even if zoom changed", () => {
   const mapCanvasProjection = new MapCanvasProjection();
   const markers: google.maps.Marker[] = [new google.maps.Marker()];
+  const forceRecalculate: boolean = false;
 
   const grid = new GridAlgorithm({ maxZoom: 16 });
   grid["noop"] = jest.fn();
@@ -91,6 +98,7 @@ test("calculate should return changed: false for next calls above max zoom, even
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   });
 
   expect(result.changed).toBe(true);
@@ -101,6 +109,7 @@ test("calculate should return changed: false for next calls above max zoom, even
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   });
 
   expect(result.changed).toBe(false);

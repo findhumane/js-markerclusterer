@@ -36,6 +36,11 @@ export interface AlgorithmInput {
    * @see [MapCanvasProjection](https://developers.google.com/maps/documentation/javascript/reference/overlay-view#MapCanvasProjection)
    */
   mapCanvasProjection: google.maps.MapCanvasProjection;
+
+  /**
+   * The `forceRecalculate` option requires cluster recalculation.
+   */
+  forceRecalculate: boolean;
 }
 
 export interface AlgorithmOutput {
@@ -124,6 +129,7 @@ export abstract class AbstractViewportAlgorithm extends AbstractAlgorithm {
     markers,
     map,
     mapCanvasProjection,
+    forceRecalculate,
   }: AlgorithmInput): AlgorithmOutput {
     const state = { zoom: map.getZoom() };
     let changed = false;
@@ -144,6 +150,7 @@ export abstract class AbstractViewportAlgorithm extends AbstractAlgorithm {
           ),
           map,
           mapCanvasProjection,
+          forceRecalculate,
         }),
         changed: changed,
       };
@@ -159,6 +166,7 @@ export abstract class AbstractViewportAlgorithm extends AbstractAlgorithm {
         ),
         map,
         mapCanvasProjection,
+        forceRecalculate,
       }),
     };
   }

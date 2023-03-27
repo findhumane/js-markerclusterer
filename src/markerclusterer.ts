@@ -159,10 +159,14 @@ export class MarkerClusterer extends OverlayViewSafe {
     }
   }
 
+  public renderIdle(): void {
+    this.render(true);
+  }
+
   /**
    * Recalculates and draws all the marker clusters.
    */
-  public render(): void {
+  public render(forceRecalculate: boolean = false): void {
     const map = this.getMap();
     if (map instanceof google.maps.Map && this.getProjection()) {
       google.maps.event.trigger(
@@ -174,6 +178,7 @@ export class MarkerClusterer extends OverlayViewSafe {
         markers: this.markers,
         map,
         mapCanvasProjection: this.getProjection(),
+        forceRecalculate: forceRecalculate,
       });
 
       // allow algorithms to return flag on whether the clusters/markers have changed
@@ -197,7 +202,7 @@ export class MarkerClusterer extends OverlayViewSafe {
   public onAdd(): void {
     this.idleListener = this.getMap().addListener(
       "idle",
-      this.render.bind(this)
+      this.renderIdle.bind(this)
     );
     this.render();
   }

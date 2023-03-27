@@ -60,7 +60,7 @@ export class SuperClusterAlgorithm extends AbstractViewportAlgorithm {
     this.state = { zoom: null };
   }
   public calculate(input: AlgorithmInput): AlgorithmOutput {
-    let changed = false;
+    let changed = input.forceRecalculate == true;
 
     if (!equal(input.markers, this.markers)) {
       changed = true;
